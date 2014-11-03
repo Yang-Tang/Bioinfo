@@ -1,5 +1,6 @@
 import sys 
 import itertools 
+import collections
 sys.setrecursionlimit(1000000000)
 
 def patterncount(Text, Pattern):
@@ -114,14 +115,40 @@ def mostfrequentkmer(text, k, d):
             output.append(pattern)
     return ' '.join(output)
 
-# path = 'C:/Users/Yang/Downloads/frequent_words_mismatch_data_1.txt'
-# fh = open(path)
-# contect = fh.readlines()
-# text = contect[0].strip()
-# print contect[1].strip().split()
-# k, d = contect[1].strip().split()
 
+def PatternToNumber(text):
+    dic = {'A':0, 'C':1, 'G':2, 'T':3}
+    n = len(text)
+    num = 0
+    for char in text:
+        num += dic.get(char, 0)*(4**(n-1))
+        n -= 1
+    return num
 
-print approximatepatterncount('CGTGACAGTGTATGGGCATCTTT', 'TGT', 1)
+def NumberToPattern(index, k):
+    nt = ['A', 'C', 'G', 'T']
+    text = ''
+    while index > 0:
+        char = nt[index % 4]
+        index /= 4
+        text = char + text
+    return 'A' * (k-len(text)) + text
+
+def ComputingFrequencies(text, k):
+    array = [0] * (4**k)
+    for idx in range(len(text)-k+1):
+        pattern = text[idx:idx+k]
+        index = PatternToNumber(pattern)
+        array[index] += 1
+    return ' '.join(map(str,array))
+
+path = 'C:/Users/Yang/Downloads/dataset_2994_5.txt'
+fh = open(path)
+contect = fh.readlines()
+text = contect[0].strip()
+k = int(contect[1].strip())
+
+print ComputingFrequencies(text, k)
+
 
 
